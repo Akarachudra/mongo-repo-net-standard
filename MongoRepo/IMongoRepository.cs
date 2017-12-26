@@ -1,0 +1,75 @@
+﻿using System;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using MongoDB.Driver;
+
+namespace MongoRepo
+{
+    public interface IMongoRepository<TEntity, TKey>
+        where TEntity : IEntity<TKey>
+    {
+        IMongoCollection<TEntity> Collection { get; }
+
+        UpdateDefinitionBuilder<TEntity> Updater { get; }
+
+        void Insert(TEntity entity);
+
+        Task InsertAsync(TEntity entity);
+
+        void Insert(TEntity[] entities);
+
+        Task InsertAsync(TEntity[] entities);
+
+        TEntity Get(TKey id);
+
+        Task<TEntity> GetAsync(TKey id);
+
+        TEntity[] Get(Expression<Func<TEntity, bool>> filter);
+
+        Task<TEntity[]> GetAsync(Expression<Func<TEntity, bool>> filter);
+
+        void Replace(TEntity entity);
+
+        Task ReplaceAsync(TEntity entity);
+
+        void Replace(TEntity[] entities);
+
+        Task ReplaceAsync(TEntity[] entities);
+
+        void Update(Expression<Func<TEntity, bool>> filter, UpdateDefinition<TEntity> updateDefinition);
+
+        Task UpdateAsync(Expression<Func<TEntity, bool>> filter, UpdateDefinition<TEntity> updateDefinition);
+
+        void Delete(TEntity entity);
+
+        Task DeleteAsync(TEntity entity);
+
+        void Delete(TEntity[] entities);
+
+        Task DeleteAsync(TEntity[] entities);
+
+        void Delete(TKey id);
+
+        Task DeleteAsync(TKey id);
+
+        void Delete(TKey[] ids);
+
+        Task DeleteAsync(TKey[] ids);
+
+        void DeleteAll();
+
+        Task DeleteAllAsync();
+
+        long Count();
+
+        long Count(Expression<Func<TEntity, bool>> filter);
+
+        Task<long> CountAsync();
+
+        Task<long> CountAsync(Expression<Func<TEntity, bool>> filter);
+
+        bool Exists(TKey id);
+
+        Task<bool> ExistsAsync(TKey id);
+    }
+}
