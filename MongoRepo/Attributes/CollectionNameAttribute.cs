@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MongoRepo
+namespace MongoRepo.Attributes
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class CollectionNameAttribute : Attribute

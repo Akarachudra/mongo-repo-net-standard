@@ -8,19 +8,14 @@ namespace MongoRepo
     public class MongoRepository<TEntity, TKey> : IMongoRepository<TEntity, TKey>
         where TEntity : IEntity<TKey>
     {
-        public MongoRepository(MongoClientSettings settings)
+        public MongoRepository(IMongoStorage mongoStorage)
         {
-            
-        }
-
-        public MongoRepository(string connectionString)
-        {
-            
+            this.Collection = mongoStorage.GetCollection<TEntity, TKey>();
         }
 
         public IMongoCollection<TEntity> Collection { get; }
 
-        public UpdateDefinitionBuilder<TEntity> Updater { get; }
+        public UpdateDefinitionBuilder<TEntity> Updater => Builders<TEntity>.Update;
 
         public void Insert(TEntity entity)
         {
