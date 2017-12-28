@@ -1,10 +1,7 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
-
-namespace MongoRepo
+﻿namespace MongoRepo
 {
     public interface IEntity<TKey>
     {
-        [BsonId]
         TKey Id { get; set; }
     }
 }
