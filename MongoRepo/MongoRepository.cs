@@ -37,12 +37,12 @@ namespace MongoRepo
             throw new NotImplementedException();
         }
 
-        public TEntity Get(TKey id)
+        public TEntity GetById(TKey id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<TEntity> GetAsync(TKey id)
+        public Task<TEntity> GetByIdAsync(TKey id)
         {
             throw new NotImplementedException();
         }

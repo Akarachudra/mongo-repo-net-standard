@@ -20,9 +20,9 @@ namespace MongoRepo
 
         Task InsertAsync(TEntity[] entities);
 
-        TEntity Get(TKey id);
+        TEntity GetById(TKey id);
 
-        Task<TEntity> GetAsync(TKey id);
+        Task<TEntity> GetByIdAsync(TKey id);
 
         TEntity[] Get(Expression<Func<TEntity, bool>> filter);
 
