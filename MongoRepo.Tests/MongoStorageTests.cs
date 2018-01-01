@@ -3,7 +3,7 @@
 namespace MongoRepo.Tests
 {
     [TestFixture]
-    public class Class1
+    public class MongoStorageTests
     {
         [Test]
         public void SomeTest()
