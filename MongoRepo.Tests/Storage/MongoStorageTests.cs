@@ -1,5 +1,4 @@
 ﻿using System;
-using MongoDB.Driver;
 using NUnit.Framework;
 
 namespace MongoRepo.Tests.Storage
@@ -10,19 +9,26 @@ namespace MongoRepo.Tests.Storage
         [Test]
         public void CanGetCollection()
         {
-            var mongoStorage = new MongoStorage(
-                new MongoClientSettings
-                {
-                    Server = new MongoServerAddress("localhost", 27017)
-                },
-                "MongoRepoTestBase");
-            var collection = mongoStorage.GetCollection<WithCollectionAttributeEntity, Guid>();
-            Assert.NotNull(collection);
+            InternalCanGetCollection(StorageFabric.GetStorageByConnectionString());
+            InternalCanGetCollection(StorageFabric.GetStorageBySettings());
         }
 
         [Test]
         public void CanThrowExceptionIfThereNoCollectionNameAttribute()
         {
+            InternalCanThrowExceptionIfThereNoCollectionNameAttribute(StorageFabric.GetStorageByConnectionString());
+            InternalCanThrowExceptionIfThereNoCollectionNameAttribute(StorageFabric.GetStorageBySettings());
+        }
+
+        private static void InternalCanGetCollection(IMongoStorage mongoStorage)
+        {
+            var collection = mongoStorage.GetCollection<WithCollectionAttributeEntity, Guid>();
+            Assert.NotNull(collection);
+        }
+
+        private static void InternalCanThrowExceptionIfThereNoCollectionNameAttribute(IMongoStorage mongoStorage)
+        {
+            Assert.Throws<ArgumentException>(() => { mongoStorage.GetCollection<WithoutCollectionAttributeEntity, Guid>(); });
         }
     }
 }
