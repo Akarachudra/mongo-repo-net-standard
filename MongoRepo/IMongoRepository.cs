@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using MongoDB.Driver;
@@ -25,7 +26,7 @@ namespace MongoRepo
 
         Task<TEntity> GetByIdAsync(TKey id);
 
-        TEntity[] Get(Expression<Func<TEntity, bool>> filter);
+        IList<TEntity> Get(Expression<Func<TEntity, bool>> filter);
 
         Task<TEntity[]> GetAsync(Expression<Func<TEntity, bool>> filter);
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using MongoDB.Driver;
@@ -20,7 +21,7 @@ namespace MongoRepo
 
         public void Insert(TEntity entity)
         {
-            throw new NotImplementedException();
+            this.Collection.InsertOne(entity);
         }
 
         public Task InsertAsync(TEntity entity)
@@ -48,9 +49,9 @@ namespace MongoRepo
             throw new NotImplementedException();
         }
 
-        public TEntity[] Get(Expression<Func<TEntity, bool>> filter)
+        public IList<TEntity> Get(Expression<Func<TEntity, bool>> filter)
         {
-            throw new NotImplementedException();
+            return this.Collection.FindSync(filter).ToList();
         }
 
         public Task<TEntity[]> GetAsync(Expression<Func<TEntity, bool>> filter)
@@ -130,12 +131,12 @@ namespace MongoRepo
 
         public void DeleteAll()
         {
-            throw new NotImplementedException();
+            this.Collection.DeleteMany(FilterDefinition<TEntity>.Empty);
         }
 
-        public Task DeleteAllAsync()
+        public async Task DeleteAllAsync()
         {
-            throw new NotImplementedException();
+            await this.Collection.DeleteManyAsync(FilterDefinition<TEntity>.Empty);
         }
 
         public long Count()
