@@ -2,7 +2,7 @@
 
 namespace MongoRepo.Entities
 {
-    public class BaseGuidEntity : Entity<Guid>
+    public interface IGuidEntity : IEntity<Guid>
     {
     }
 }
