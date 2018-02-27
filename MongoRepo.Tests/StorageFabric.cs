@@ -9,14 +9,14 @@ namespace MongoRepo.Tests
             return new MongoStorage(
                 new MongoClientSettings
                 {
-                    Server = new MongoServerAddress(TestSettings.MongoServer, TestSettings.MongoPort)
+                    Server = new MongoServerAddress(StorageSettings.MongoServer, StorageSettings.MongoPort)
                 },
-                TestSettings.MongoDataBaseName);
+                StorageSettings.MongoDataBaseName);
         }
 
         public static IMongoStorage GetStorageByConnectionString()
         {
-            return new MongoStorage(TestSettings.MongoConnectionString, TestSettings.MongoDataBaseName);
+            return new MongoStorage(StorageSettings.MongoConnectionString, StorageSettings.MongoDataBaseName);
         }
     }
 }

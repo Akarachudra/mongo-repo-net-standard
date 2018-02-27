@@ -1,6 +1,6 @@
 ﻿namespace MongoRepo.Tests
 {
-    public static class TestSettings
+    public static class StorageSettings
     {
         public const string MongoServer = "localhost";
 
