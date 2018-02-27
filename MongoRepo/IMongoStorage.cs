@@ -1,4 +1,5 @@
 ﻿using MongoDB.Driver;
+using MongoRepo.Entities;
 
 namespace MongoRepo
 {

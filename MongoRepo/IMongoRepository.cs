@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using MongoDB.Driver;
+using MongoRepo.Entities;
 
 namespace MongoRepo
 {

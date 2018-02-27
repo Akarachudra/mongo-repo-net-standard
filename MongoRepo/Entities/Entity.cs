@@ -1,4 +1,4 @@
-﻿namespace MongoRepo
+﻿namespace MongoRepo.Entities
 {
     public abstract class Entity<TKey> : IEntity<TKey>
     {

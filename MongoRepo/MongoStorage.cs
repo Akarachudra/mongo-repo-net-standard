@@ -1,15 +1,16 @@
 ﻿using MongoDB.Driver;
+using MongoRepo.Entities;
 
 namespace MongoRepo
 {
     public class MongoStorage : IMongoStorage
     {
-        public MongoStorage(MongoClientSettings settings)
+        public MongoStorage(MongoClientSettings settings, string dataBaseName)
         {
             
         }
 
-        public MongoStorage(string connectionString)
+        public MongoStorage(string connectionString, string dataBaseName)
         {
             
         }
