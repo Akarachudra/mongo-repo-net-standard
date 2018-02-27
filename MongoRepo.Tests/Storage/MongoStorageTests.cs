@@ -1,4 +1,6 @@
 ﻿using System;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using MongoRepo.Attributes;
 using NUnit.Framework;
 
@@ -28,6 +30,13 @@ namespace MongoRepo.Tests.Storage
             InternalCanThrowExceptionIfCollectionNameAttributeEmpty(StorageFabric.GetStorageBySettings());
         }
 
+        [Test]
+        public void CanDropCollection()
+        {
+            InternalCanDropCollection(StorageFabric.GetStorageByConnectionString());
+            InternalCanDropCollection(StorageFabric.GetStorageBySettings());
+        }
+
         private static void InternalCanGetCollection(IMongoStorage mongoStorage)
         {
             var collection = mongoStorage.GetCollection<WithCollectionAttributeEntity, Guid>();
@@ -46,6 +55,24 @@ namespace MongoRepo.Tests.Storage
             Assert.Throws<ArgumentException>(
                 () => { mongoStorage.GetCollection<WithEmptyCollectionAttributeEntity, Guid>(); },
                 $"There is empty collection name at {typeof(CollectionNameAttribute).Name} in {typeof(WithEmptyCollectionAttributeEntity).Name}");
+        }
+
+        private static void InternalCanDropCollection(IMongoStorage mongoStorage)
+        {
+            var filter = new BsonDocument("name", StorageTestConstants.EntityCollectionName);
+            try
+            {
+                mongoStorage.Database.CreateCollection(StorageTestConstants.EntityCollectionName);
+            }
+            catch (MongoCommandException)
+            {
+            }
+
+            var collections = mongoStorage.Database.ListCollections(new ListCollectionsOptions { Filter = filter });
+            Assert.IsTrue(collections.Any());
+            mongoStorage.DropCollection<WithCollectionAttributeEntity, Guid>();
+            collections = mongoStorage.Database.ListCollections(new ListCollectionsOptions { Filter = filter });
+            Assert.IsFalse(collections.Any());
         }
     }
 }

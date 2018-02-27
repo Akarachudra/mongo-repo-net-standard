@@ -8,21 +8,33 @@ namespace MongoRepo
 {
     public class MongoStorage : IMongoStorage
     {
-        private readonly IMongoDatabase database;
-
         public MongoStorage(MongoClientSettings settings, string dataBaseName)
         {
             var client = new MongoClient(settings);
-            this.database = client.GetDatabase(dataBaseName);
+            this.Database = client.GetDatabase(dataBaseName);
         }
 
         public MongoStorage(string connectionString, string dataBaseName)
         {
             var client = new MongoClient(connectionString);
-            this.database = client.GetDatabase(dataBaseName);
+            this.Database = client.GetDatabase(dataBaseName);
         }
 
+        public IMongoDatabase Database { get; }
+
         public IMongoCollection<TEntity> GetCollection<TEntity, TKey>()
+            where TEntity : IEntity<TKey>
+        {
+            return this.Database.GetCollection<TEntity>(GetCollectionName<TEntity, TKey>());
+        }
+
+        public void DropCollection<TEntity, TKey>()
+            where TEntity : IEntity<TKey>
+        {
+            this.Database.DropCollection(GetCollectionName<TEntity, TKey>());
+        }
+
+        private static string GetCollectionName<TEntity, TKey>()
             where TEntity : IEntity<TKey>
         {
             var typeInfo = typeof(TEntity).GetTypeInfo();
@@ -37,18 +49,12 @@ namespace MongoRepo
                             $"There is empty collection name at {typeof(CollectionNameAttribute).Name} in {typeInfo.Name}");
                     }
 
-                    return this.database.GetCollection<TEntity>(collectionName);
+                    return collectionName;
                 }
             }
 
             throw new ArgumentException(
                 $"There is no {typeof(CollectionNameAttribute).Name} attribute at {typeInfo.Name}");
-        }
-
-        public void DropCollection<TEntity, TKey>()
-            where TEntity : IEntity<TKey>
-        {
-            throw new NotImplementedException();
         }
     }
 }

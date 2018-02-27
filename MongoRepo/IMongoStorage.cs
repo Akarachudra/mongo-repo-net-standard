@@ -5,6 +5,8 @@ namespace MongoRepo
 {
     public interface IMongoStorage
     {
+        IMongoDatabase Database { get; }
+
         IMongoCollection<TEntity> GetCollection<TEntity, TKey>()
             where TEntity : IEntity<TKey>;
 
