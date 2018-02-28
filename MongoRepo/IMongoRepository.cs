@@ -28,7 +28,7 @@ namespace MongoRepo
 
         IList<TEntity> Get(Expression<Func<TEntity, bool>> filter);
 
-        Task<TEntity[]> GetAsync(Expression<Func<TEntity, bool>> filter);
+        Task<IList<TEntity>> GetAsync(Expression<Func<TEntity, bool>> filter);
 
         void Replace(TEntity entity);
 

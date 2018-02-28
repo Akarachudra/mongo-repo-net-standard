@@ -24,9 +24,9 @@ namespace MongoRepo
             this.Collection.InsertOne(entity);
         }
 
-        public Task InsertAsync(TEntity entity)
+        public async Task InsertAsync(TEntity entity)
         {
-            throw new NotImplementedException();
+            await this.Collection.InsertOneAsync(entity);
         }
 
         public void Insert(TEntity[] entities)
@@ -54,9 +54,9 @@ namespace MongoRepo
             return this.Collection.FindSync(filter).ToList();
         }
 
-        public Task<TEntity[]> GetAsync(Expression<Func<TEntity, bool>> filter)
+        public async Task<IList<TEntity>> GetAsync(Expression<Func<TEntity, bool>> filter)
         {
-            throw new NotImplementedException();
+            return (await this.Collection.FindAsync(filter)).ToList();
         }
 
         public void Replace(TEntity entity)

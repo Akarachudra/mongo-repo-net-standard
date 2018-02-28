@@ -3,8 +3,8 @@ using MongoRepo.Entities;
 
 namespace MongoRepo.Tests.Repository
 {
-    [CollectionName("TestCollection")]
-    public class TestEntity : ObjectIdEntity
+    [CollectionName("GuidTestEntity")]
+    public class GuidTestEntity : GuidEntity
     {
         public int SomeData { get; set; }
     }
