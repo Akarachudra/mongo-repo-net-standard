@@ -56,7 +56,7 @@ namespace MongoRepo
 
         public async Task<IList<TEntity>> GetAsync(Expression<Func<TEntity, bool>> filter)
         {
-            return (await this.Collection.FindAsync(filter)).ToList();
+            return await (await this.Collection.FindAsync(filter)).ToListAsync();
         }
 
         public void Replace(TEntity entity)
