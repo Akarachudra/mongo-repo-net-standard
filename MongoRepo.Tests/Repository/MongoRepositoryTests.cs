@@ -71,6 +71,20 @@ namespace MongoRepo.Tests.Repository
             Assert.NotNull(resultEntity);
         }
 
+        [Test]
+        public void CanInsertSeveralDocumentsAndGetAll()
+        {
+            InternalInsertSeveralDocumentsAndGetAll(this.objectIdRepository.Insert, this.objectIdRepository.GetAll);
+        }
+
+        [Test]
+        public void CanInsertSeveralDocumentsAndGetAllAsync()
+        {
+            InternalInsertSeveralDocumentsAndGetAll(
+                entities => this.objectIdRepository.InsertAsync(entities).Wait(),
+                () => this.objectIdRepository.GetAllAsync().Result);
+        }
+
         private static void InternalCanInsertAndGetWithFilter(Action<ObjectIdTestEntity> insert, Func<Expression<Func<ObjectIdTestEntity, bool>>, IList<ObjectIdTestEntity>> get)
         {
             var testEntity = new ObjectIdTestEntity
@@ -80,6 +94,24 @@ namespace MongoRepo.Tests.Repository
             insert(testEntity);
             var result = get(x => x.SomeData == testEntity.SomeData);
             Assert.IsTrue(result.Count == 1);
+        }
+
+        private static void InternalInsertSeveralDocumentsAndGetAll(Action<IEnumerable<ObjectIdTestEntity>> insert, Func<IList<ObjectIdTestEntity>> getAll)
+        {
+            var testEntities = new[]
+            {
+                new ObjectIdTestEntity
+                {
+                    SomeData = 5
+                },
+                new ObjectIdTestEntity
+                {
+                    SomeData = 10
+                }
+            };
+            insert(testEntities);
+            var resultEntities = getAll();
+            CollectionAssert.AreEquivalent(testEntities.Select(x => new { x.SomeData }), resultEntities.Select(x => new { x.SomeData }));
         }
     }
 }

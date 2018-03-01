@@ -18,9 +18,9 @@ namespace MongoRepo
 
         Task InsertAsync(TEntity entity);
 
-        void Insert(TEntity[] entities);
+        void Insert(IEnumerable<TEntity> entities);
 
-        Task InsertAsync(TEntity[] entities);
+        Task InsertAsync(IEnumerable<TEntity> entities);
 
         TEntity GetById(TKey id);
 
@@ -29,6 +29,10 @@ namespace MongoRepo
         IList<TEntity> Get(Expression<Func<TEntity, bool>> filter);
 
         Task<IList<TEntity>> GetAsync(Expression<Func<TEntity, bool>> filter);
+
+        IList<TEntity> GetAll();
+
+        Task<IList<TEntity>> GetAllAsync();
 
         void Replace(TEntity entity);
 

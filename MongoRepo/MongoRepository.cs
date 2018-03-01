@@ -29,14 +29,14 @@ namespace MongoRepo
             await this.Collection.InsertOneAsync(entity);
         }
 
-        public void Insert(TEntity[] entities)
+        public void Insert(IEnumerable<TEntity> entities)
         {
-            throw new NotImplementedException();
+            this.Collection.InsertMany(entities);
         }
 
-        public Task InsertAsync(TEntity[] entities)
+        public async Task InsertAsync(IEnumerable<TEntity> entities)
         {
-            throw new NotImplementedException();
+            await this.Collection.InsertManyAsync(entities);
         }
 
         public TEntity GetById(TKey id)
@@ -57,6 +57,16 @@ namespace MongoRepo
         public async Task<IList<TEntity>> GetAsync(Expression<Func<TEntity, bool>> filter)
         {
             return await (await this.Collection.FindAsync(filter)).ToListAsync();
+        }
+
+        public IList<TEntity> GetAll()
+        {
+            return this.Collection.FindSync(FilterDefinition<TEntity>.Empty).ToList();
+        }
+
+        public async Task<IList<TEntity>> GetAllAsync()
+        {
+            return await (await this.Collection.FindAsync(FilterDefinition<TEntity>.Empty)).ToListAsync();
         }
 
         public void Replace(TEntity entity)
