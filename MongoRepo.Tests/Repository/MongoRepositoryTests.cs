@@ -46,7 +46,7 @@ namespace MongoRepo.Tests.Repository
         {
             var testEntity = new ObjectIdTestEntity();
             this.objectIdRepository.Insert(testEntity);
-            var resultEntity = this.objectIdRepository.Get(x => x.Id != default(ObjectId).ToString()).SingleOrDefault();
+            var resultEntity = this.objectIdRepository.Get(x => x.Id != default(ObjectId).ToString()).FirstOrDefault();
             Assert.NotNull(resultEntity);
         }
 
@@ -55,7 +55,19 @@ namespace MongoRepo.Tests.Repository
         {
             var testEntity = new GuidIdTestEntity();
             this.guidIdRepository.Insert(testEntity);
-            var resultEntity = this.guidIdRepository.Get(x => x.Id != default(Guid)).SingleOrDefault();
+            var resultEntity = this.guidIdRepository.Get(x => x.Id != default(Guid)).FirstOrDefault();
+            Assert.NotNull(resultEntity);
+        }
+
+        [Test]
+        public void CanInsertWithClientSideGuidId()
+        {
+            var testEntity = new GuidIdTestEntity
+            {
+                Id = Guid.NewGuid()
+            };
+            this.guidIdRepository.Insert(testEntity);
+            var resultEntity = this.guidIdRepository.Get(x => x.Id == testEntity.Id).FirstOrDefault();
             Assert.NotNull(resultEntity);
         }
 
