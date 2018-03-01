@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using MongoDB.Driver;
@@ -41,12 +42,24 @@ namespace MongoRepo
 
         public TEntity GetById(TKey id)
         {
-            throw new NotImplementedException();
+            var entity = this.Collection.FindSync(GetIdFilter(id)).FirstOrDefault();
+            if (entity == null)
+            {
+                throw new ArgumentException($"{typeof(TEntity).Name} with id {id} not found");
+            }
+
+            return entity;
         }
 
-        public Task<TEntity> GetByIdAsync(TKey id)
+        public async Task<TEntity> GetByIdAsync(TKey id)
         {
-            throw new NotImplementedException();
+            var entity = (await (await this.Collection.FindAsync(GetIdFilter(id)).ConfigureAwait(false)).ToListAsync().ConfigureAwait(false)).FirstOrDefault();
+            if (entity == null)
+            {
+                throw new ArgumentException($"{typeof(TEntity).Name} with id {id} not found");
+            }
+
+            return entity;
         }
 
         public IList<TEntity> Get(Expression<Func<TEntity, bool>> filter)
@@ -177,6 +190,13 @@ namespace MongoRepo
         public Task<bool> ExistsAsync(TKey id)
         {
             throw new NotImplementedException();
+        }
+
+        private static FilterDefinition<TEntity> GetIdFilter(TKey id)
+        {
+            var builder = Builders<TEntity>.Filter;
+            var filter = builder.Eq(x => x.Id, id);
+            return filter;
         }
     }
 }

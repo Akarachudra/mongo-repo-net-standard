@@ -85,7 +85,23 @@ namespace MongoRepo.Tests.Repository
                 () => this.objectIdRepository.GetAllAsync().Result);
         }
 
-        private static void InternalCanInsertAndGetWithFilter(Action<ObjectIdTestEntity> insert, Func<Expression<Func<ObjectIdTestEntity, bool>>, IList<ObjectIdTestEntity>> get)
+        [Test]
+        public void CanGetByIdAndThrowExceptionIfNotFound()
+        {
+            InternalCanGetById(this.guidIdRepository.Insert, this.guidIdRepository.GetById);
+        }
+
+        [Test]
+        public void CanGetByIdAndThrowExceptionIfNotFoundAsync()
+        {
+            InternalCanGetById(
+                entity => this.guidIdRepository.InsertAsync(entity).Wait(),
+                key => this.guidIdRepository.GetByIdAsync(key).Result);
+        }
+
+        private static void InternalCanInsertAndGetWithFilter(
+            Action<ObjectIdTestEntity> insert,
+            Func<Expression<Func<ObjectIdTestEntity, bool>>, IList<ObjectIdTestEntity>> get)
         {
             var testEntity = new ObjectIdTestEntity
             {
@@ -112,6 +128,36 @@ namespace MongoRepo.Tests.Repository
             insert(testEntities);
             var resultEntities = getAll();
             CollectionAssert.AreEquivalent(testEntities.Select(x => new { x.SomeData }), resultEntities.Select(x => new { x.SomeData }));
+        }
+
+        private static void InternalCanGetById(Action<GuidIdTestEntity> insert, Func<Guid, GuidIdTestEntity> getById)
+        {
+            var testEntity = new GuidIdTestEntity
+            {
+                Id = Guid.NewGuid(),
+                SomeData = 10
+            };
+            insert(testEntity);
+            var resultEntity = getById(testEntity.Id);
+            Assert.AreEqual(resultEntity.SomeData, testEntity.SomeData);
+            var notExistsKey = Guid.NewGuid();
+
+            // Test exception throwing
+            try
+            {
+                getById(notExistsKey);
+            }
+            catch (Exception e)
+            {
+                var argumentException = e as ArgumentException;
+                if (e is AggregateException aggregateException)
+                {
+                    argumentException = aggregateException.InnerExceptions.First() as ArgumentException;
+                }
+
+                Assert.NotNull(argumentException);
+                Assert.AreEqual($"{typeof(GuidIdTestEntity).Name} with id {notExistsKey} not found", argumentException.Message);
+            }
         }
     }
 }
