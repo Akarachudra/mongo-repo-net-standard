@@ -64,9 +64,9 @@ namespace MongoRepo
 
         long Count();
 
-        long Count(Expression<Func<TEntity, bool>> filter);
-
         Task<long> CountAsync();
+
+        long Count(Expression<Func<TEntity, bool>> filter);
 
         Task<long> CountAsync(Expression<Func<TEntity, bool>> filter);
 

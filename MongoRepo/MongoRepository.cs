@@ -144,12 +144,12 @@ namespace MongoRepo
             throw new NotImplementedException();
         }
 
-        public long Count(Expression<Func<TEntity, bool>> filter)
+        public Task<long> CountAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<long> CountAsync()
+        public long Count(Expression<Func<TEntity, bool>> filter)
         {
             throw new NotImplementedException();
         }
