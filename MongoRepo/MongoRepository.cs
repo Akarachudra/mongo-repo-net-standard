@@ -26,7 +26,7 @@ namespace MongoRepo
 
         public async Task InsertAsync(TEntity entity)
         {
-            await this.Collection.InsertOneAsync(entity);
+            await this.Collection.InsertOneAsync(entity).ConfigureAwait(false);
         }
 
         public void Insert(IEnumerable<TEntity> entities)
@@ -36,7 +36,7 @@ namespace MongoRepo
 
         public async Task InsertAsync(IEnumerable<TEntity> entities)
         {
-            await this.Collection.InsertManyAsync(entities);
+            await this.Collection.InsertManyAsync(entities).ConfigureAwait(false);
         }
 
         public TEntity GetById(TKey id)
@@ -56,7 +56,7 @@ namespace MongoRepo
 
         public async Task<IList<TEntity>> GetAsync(Expression<Func<TEntity, bool>> filter)
         {
-            return await (await this.Collection.FindAsync(filter)).ToListAsync();
+            return await (await this.Collection.FindAsync(filter).ConfigureAwait(false)).ToListAsync().ConfigureAwait(false);
         }
 
         public IList<TEntity> GetAll()
@@ -66,7 +66,7 @@ namespace MongoRepo
 
         public async Task<IList<TEntity>> GetAllAsync()
         {
-            return await (await this.Collection.FindAsync(FilterDefinition<TEntity>.Empty)).ToListAsync();
+            return await (await this.Collection.FindAsync(FilterDefinition<TEntity>.Empty).ConfigureAwait(false)).ToListAsync().ConfigureAwait(false);
         }
 
         public void Replace(TEntity entity)
@@ -146,7 +146,7 @@ namespace MongoRepo
 
         public async Task DeleteAllAsync()
         {
-            await this.Collection.DeleteManyAsync(FilterDefinition<TEntity>.Empty);
+            await this.Collection.DeleteManyAsync(FilterDefinition<TEntity>.Empty).ConfigureAwait(false);
         }
 
         public long Count()
