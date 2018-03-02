@@ -7,5 +7,7 @@ namespace MongoRepo.Tests.Repository
     public class GuidIdTestEntity : GuidEntity
     {
         public int SomeData { get; set; }
+
+        public int AnotherData { get; set; }
     }
 }

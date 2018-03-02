@@ -84,12 +84,12 @@ namespace MongoRepo
 
         public void Replace(TEntity entity)
         {
-            throw new NotImplementedException();
+            this.Collection.ReplaceOne(GetIdFilter(entity.Id), entity);
         }
 
-        public Task ReplaceAsync(TEntity entity)
+        public async Task ReplaceAsync(TEntity entity)
         {
-            throw new NotImplementedException();
+            await this.Collection.ReplaceOneAsync(GetIdFilter(entity.Id), entity);
         }
 
         public void Replace(TEntity[] entities)

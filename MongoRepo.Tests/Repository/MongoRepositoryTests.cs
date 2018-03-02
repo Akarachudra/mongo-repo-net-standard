@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using MongoDB.Bson;
+using MongoRepo.Tests.Helpers;
 using NUnit.Framework;
 
 namespace MongoRepo.Tests.Repository
@@ -99,6 +100,24 @@ namespace MongoRepo.Tests.Repository
                 key => this.guidIdRepository.GetByIdAsync(key).Result);
         }
 
+        [Test]
+        public void CanReplaceEntity()
+        {
+            InternalCanReplaceEntity(
+                this.guidIdRepository.Insert,
+                this.guidIdRepository.GetById,
+                this.guidIdRepository.Replace);
+        }
+
+        [Test]
+        public void CanReplaceEntityAsync()
+        {
+            InternalCanReplaceEntity(
+                entity => this.guidIdRepository.InsertAsync(entity).Wait(),
+                key => this.guidIdRepository.GetByIdAsync(key).Result,
+                entity => this.guidIdRepository.ReplaceAsync(entity).Wait());
+        }
+
         private static void InternalCanInsertAndGetWithFilter(
             Action<ObjectIdTestEntity> insert,
             Func<Expression<Func<ObjectIdTestEntity, bool>>, IList<ObjectIdTestEntity>> get)
@@ -140,9 +159,9 @@ namespace MongoRepo.Tests.Repository
             insert(testEntity);
             var resultEntity = getById(testEntity.Id);
             Assert.AreEqual(resultEntity.SomeData, testEntity.SomeData);
-            var notExistsKey = Guid.NewGuid();
 
             // Test exception throwing
+            var notExistsKey = Guid.NewGuid();
             try
             {
                 getById(notExistsKey);
@@ -158,6 +177,26 @@ namespace MongoRepo.Tests.Repository
                 Assert.NotNull(argumentException);
                 Assert.AreEqual($"{typeof(GuidIdTestEntity).Name} with id {notExistsKey} not found", argumentException.Message);
             }
+        }
+
+        private static void InternalCanReplaceEntity(Action<GuidIdTestEntity> insert, Func<Guid, GuidIdTestEntity> getById, Action<GuidIdTestEntity> replace)
+        {
+            var testEntity = new GuidIdTestEntity
+            {
+                Id = Guid.NewGuid(),
+                SomeData = 10,
+                AnotherData = 5
+            };
+            insert(testEntity);
+            var replaceWith = new GuidIdTestEntity
+            {
+                Id = testEntity.Id,
+                SomeData = 5,
+                AnotherData = 10
+            };
+            replace(replaceWith);
+            var resultEntity = getById(testEntity.Id);
+            Assert.IsTrue(ObjectsComparer.AreEqual(replaceWith, resultEntity));
         }
     }
 }
