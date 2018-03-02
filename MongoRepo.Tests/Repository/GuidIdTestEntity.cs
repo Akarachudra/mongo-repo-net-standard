@@ -4,7 +4,7 @@ using MongoRepo.Entities;
 namespace MongoRepo.Tests.Repository
 {
     [CollectionName("GuidIdTestEntity")]
-    public class GuidIdTestEntity : GuidEntity
+    public class GuidIdTestEntity : BaseGuidEntity
     {
         public int SomeData { get; set; }
 

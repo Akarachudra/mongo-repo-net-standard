@@ -2,7 +2,7 @@
 
 namespace MongoRepo.Tests.Storage
 {
-    public class WithoutCollectionAttributeEntity : GuidEntity
+    public class WithoutCollectionAttributeEntity : BaseGuidEntity
     {
         public int SomeData { get; set; }
     }
