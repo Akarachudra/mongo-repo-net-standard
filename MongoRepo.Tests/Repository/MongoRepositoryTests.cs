@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using MongoDB.Bson;
+using MongoDB.Driver;
 using MongoRepo.Tests.Helpers;
 using NUnit.Framework;
 
@@ -89,13 +90,13 @@ namespace MongoRepo.Tests.Repository
         [Test]
         public void CanGetByIdAndThrowExceptionIfNotFound()
         {
-            InternalCanGetById(this.guidIdRepository.Insert, this.guidIdRepository.GetById);
+            InternalCanGetByIdAndThrowExceptionIfNotFound(this.guidIdRepository.Insert, this.guidIdRepository.GetById);
         }
 
         [Test]
         public void CanGetByIdAndThrowExceptionIfNotFoundAsync()
         {
-            InternalCanGetById(
+            InternalCanGetByIdAndThrowExceptionIfNotFound(
                 entity => this.guidIdRepository.InsertAsync(entity).Wait(),
                 key => this.guidIdRepository.GetByIdAsync(key).Result);
         }
@@ -136,6 +137,21 @@ namespace MongoRepo.Tests.Repository
                 entities => this.guidIdRepository.ReplaceAsync(entities).Wait());
         }
 
+        [Test]
+        public void CanUpdateEntity()
+        {
+            this.InternalCanUpdateEntity(this.guidIdRepository.Insert, this.guidIdRepository.GetById, this.guidIdRepository.Update);
+        }
+
+        [Test]
+        public void CanUpdateEntityAsync()
+        {
+            this.InternalCanUpdateEntity(
+                entity => this.guidIdRepository.InsertAsync(entity).Wait(),
+                guid => this.guidIdRepository.GetByIdAsync(guid).Result,
+                (f, u) => this.guidIdRepository.UpdateAsync(f, u).Wait());
+        }
+
         private static void InternalCanInsertAndGetWithFilter(
             Action<ObjectIdTestEntity> insert,
             Func<Expression<Func<ObjectIdTestEntity, bool>>, IList<ObjectIdTestEntity>> get)
@@ -167,7 +183,7 @@ namespace MongoRepo.Tests.Repository
             CollectionAssert.AreEquivalent(testEntities.Select(x => new { x.SomeData }), resultEntities.Select(x => new { x.SomeData }));
         }
 
-        private static void InternalCanGetById(Action<GuidIdTestEntity> insert, Func<Guid, GuidIdTestEntity> getById)
+        private static void InternalCanGetByIdAndThrowExceptionIfNotFound(Action<GuidIdTestEntity> insert, Func<Guid, GuidIdTestEntity> getById)
         {
             var testEntity = new GuidIdTestEntity
             {
@@ -237,7 +253,6 @@ namespace MongoRepo.Tests.Repository
                     AnotherData = 3
                 }
             };
-
             insert(testEntities);
             var replaceWithEntities = new[]
             {
@@ -259,6 +274,26 @@ namespace MongoRepo.Tests.Repository
             CollectionAssert.AreEquivalent(
                 replaceWithEntities.Select(x => new { x.Id, x.SomeData, x.AnotherData }),
                 resultEntities.Select(x => new { x.Id, x.SomeData, x.AnotherData }));
+        }
+
+        private void InternalCanUpdateEntity(
+            Action<GuidIdTestEntity> insert,
+            Func<Guid, GuidIdTestEntity> getById,
+            Action<Expression<Func<GuidIdTestEntity, bool>>, UpdateDefinition<GuidIdTestEntity>> update)
+        {
+            var testEntity = new GuidIdTestEntity
+            {
+                Id = Guid.NewGuid(),
+                SomeData = 5,
+                AnotherData = 10
+            };
+            insert(testEntity);
+            var updater = this.guidIdRepository.Updater;
+            var updateDefinition = updater.Set(x => x.SomeData, 10);
+            update(x => x.Id == testEntity.Id, updateDefinition);
+            var resultEntity = getById(testEntity.Id);
+            Assert.AreEqual(10, resultEntity.SomeData);
+            Assert.AreEqual(testEntity.AnotherData, resultEntity.AnotherData);
         }
     }
 }

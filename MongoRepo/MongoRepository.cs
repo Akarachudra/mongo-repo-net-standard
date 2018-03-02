@@ -101,17 +101,17 @@ namespace MongoRepo
         public async Task ReplaceAsync(IEnumerable<TEntity> entities)
         {
             var replacements = entities.Select(x => new ReplaceOneModel<TEntity>(GetIdFilter(x.Id), x));
-            await this.Collection.BulkWriteAsync(replacements);
+            await this.Collection.BulkWriteAsync(replacements).ConfigureAwait(false);
         }
 
         public void Update(Expression<Func<TEntity, bool>> filter, UpdateDefinition<TEntity> updateDefinition)
         {
-            throw new NotImplementedException();
+            this.Collection.UpdateOne(filter, updateDefinition);
         }
 
-        public Task UpdateAsync(Expression<Func<TEntity, bool>> filter, UpdateDefinition<TEntity> updateDefinition)
+        public async Task UpdateAsync(Expression<Func<TEntity, bool>> filter, UpdateDefinition<TEntity> updateDefinition)
         {
-            throw new NotImplementedException();
+            await this.Collection.UpdateOneAsync(filter, updateDefinition).ConfigureAwait(false);
         }
 
         public void Delete(TEntity entity)
