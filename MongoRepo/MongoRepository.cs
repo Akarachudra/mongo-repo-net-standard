@@ -89,17 +89,19 @@ namespace MongoRepo
 
         public async Task ReplaceAsync(TEntity entity)
         {
-            await this.Collection.ReplaceOneAsync(GetIdFilter(entity.Id), entity);
+            await this.Collection.ReplaceOneAsync(GetIdFilter(entity.Id), entity).ConfigureAwait(false);
         }
 
-        public void Replace(TEntity[] entities)
+        public void Replace(IEnumerable<TEntity> entities)
         {
-            throw new NotImplementedException();
+            var replacements = entities.Select(x => new ReplaceOneModel<TEntity>(GetIdFilter(x.Id), x));
+            this.Collection.BulkWrite(replacements);
         }
 
-        public Task ReplaceAsync(TEntity[] entities)
+        public async Task ReplaceAsync(IEnumerable<TEntity> entities)
         {
-            throw new NotImplementedException();
+            var replacements = entities.Select(x => new ReplaceOneModel<TEntity>(GetIdFilter(x.Id), x));
+            await this.Collection.BulkWriteAsync(replacements);
         }
 
         public void Update(Expression<Func<TEntity, bool>> filter, UpdateDefinition<TEntity> updateDefinition)

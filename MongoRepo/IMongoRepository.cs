@@ -38,9 +38,9 @@ namespace MongoRepo
 
         Task ReplaceAsync(TEntity entity);
 
-        void Replace(TEntity[] entities);
+        void Replace(IEnumerable<TEntity> entities);
 
-        Task ReplaceAsync(TEntity[] entities);
+        Task ReplaceAsync(IEnumerable<TEntity> entities);
 
         void Update(Expression<Func<TEntity, bool>> filter, UpdateDefinition<TEntity> updateDefinition);
 

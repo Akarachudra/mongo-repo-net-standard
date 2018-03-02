@@ -118,6 +118,24 @@ namespace MongoRepo.Tests.Repository
                 entity => this.guidIdRepository.ReplaceAsync(entity).Wait());
         }
 
+        [Test]
+        public void CanReplaceSeveralEntities()
+        {
+            InternalCanReplaceSeveralEntities(
+                this.guidIdRepository.Insert,
+                this.guidIdRepository.GetAll,
+                this.guidIdRepository.Replace);
+        }
+
+        [Test]
+        public void CanReplaceSeveralEntitiesAsync()
+        {
+            InternalCanReplaceSeveralEntities(
+                entities => this.guidIdRepository.InsertAsync(entities).Wait(),
+                () => this.guidIdRepository.GetAllAsync().Result,
+                entities => this.guidIdRepository.ReplaceAsync(entities).Wait());
+        }
+
         private static void InternalCanInsertAndGetWithFilter(
             Action<ObjectIdTestEntity> insert,
             Func<Expression<Func<ObjectIdTestEntity, bool>>, IList<ObjectIdTestEntity>> get)
@@ -197,6 +215,50 @@ namespace MongoRepo.Tests.Repository
             replace(replaceWith);
             var resultEntity = getById(testEntity.Id);
             Assert.IsTrue(ObjectsComparer.AreEqual(replaceWith, resultEntity));
+        }
+
+        private static void InternalCanReplaceSeveralEntities(
+            Action<IEnumerable<GuidIdTestEntity>> insert,
+            Func<IEnumerable<GuidIdTestEntity>> getAll,
+            Action<IEnumerable<GuidIdTestEntity>> replace)
+        {
+            var testEntities = new[]
+            {
+                new GuidIdTestEntity
+                {
+                    Id = Guid.NewGuid(),
+                    SomeData = 10,
+                    AnotherData = 5
+                },
+                new GuidIdTestEntity
+                {
+                    Id = Guid.NewGuid(),
+                    SomeData = 1,
+                    AnotherData = 3
+                }
+            };
+
+            insert(testEntities);
+            var replaceWithEntities = new[]
+            {
+                new GuidIdTestEntity
+                {
+                    Id = testEntities[0].Id,
+                    SomeData = 3,
+                    AnotherData = 8
+                },
+                new GuidIdTestEntity
+                {
+                    Id = testEntities[1].Id,
+                    SomeData = 5,
+                    AnotherData = 6
+                }
+            };
+            replace(replaceWithEntities);
+            var resultEntities = getAll();
+            CollectionAssert.AreEquivalent(
+                replaceWithEntities.Select(x => new { x.Id, x.SomeData, x.AnotherData }),
+                resultEntities.Select(x => new { x.Id, x.SomeData, x.AnotherData }));
         }
     }
 }
