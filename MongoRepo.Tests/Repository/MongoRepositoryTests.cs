@@ -18,8 +18,8 @@ namespace MongoRepo.Tests.Repository
         public MongoRepositoryTests()
         {
             var mongoStorage = StorageFabric.GetStorageBySettings();
-            this.objectIdRepository = new MongoRepository<ObjectIdTestEntity, string>(mongoStorage);
-            this.guidIdRepository = new MongoRepository<GuidIdTestEntity, Guid>(mongoStorage);
+            this.objectIdRepository = new GenericMongoRepository<ObjectIdTestEntity, string>(mongoStorage);
+            this.guidIdRepository = new GenericMongoRepository<GuidIdTestEntity, Guid>(mongoStorage);
         }
 
         [SetUp]
